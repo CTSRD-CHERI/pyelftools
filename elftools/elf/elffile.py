@@ -663,6 +663,8 @@ class ELFFile(object):
             return StabSection(section_header, name, self)
         elif sectype == 'SHT_ARM_ATTRIBUTES':
             return ARMAttributesSection(section_header, name, self)
+        elif sectype == 'SHT_AARCH64_ATTRIBUTES':
+            return ARMAttributesSection(section_header, name, self)
         elif sectype == 'SHT_RISCV_ATTRIBUTES':
             return RISCVAttributesSection(section_header, name, self)
         elif sectype == 'SHT_HASH':

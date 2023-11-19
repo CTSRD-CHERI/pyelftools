@@ -10,13 +10,17 @@ from ..common.utils import struct_parse, bytes2hex, roundup, bytes2str
 from ..construct import CString
 
 
-def iter_notes(elffile, offset, size):
+def iter_notes(elffile, offset, size, sh_name=None):
     """ Yield all the notes in a section or segment.
     """
     end = offset + size
+    if sh_name == '.note.cheri':
+        note_struct = elffile.structs.Elf_Cheri_Nhdr
+    else:
+        note_struct = elffile.structs.Elf_Nhdr
     while offset < end:
         note = struct_parse(
-            elffile.structs.Elf_Nhdr,
+            note_struct,
             elffile.stream,
             stream_pos=offset)
         note['n_offset'] = offset
@@ -30,6 +34,7 @@ def iter_notes(elffile, offset, size):
 
         desc_data = elffile.stream.read(note['n_descsz'])
         note['n_descdata'] = desc_data
+
         if note['n_type'] == 'NT_GNU_ABI_TAG':
             note['n_desc'] = struct_parse(elffile.structs.Elf_abi,
                                           elffile.stream,
@@ -54,8 +59,17 @@ def iter_notes(elffile, offset, size):
                 off += roundup(p.pr_datasz + 8, 2 if elffile.elfclass == 32 else 3)
                 props.append(p)
             note['n_desc'] = props
+        elif note['n_type'] == 'NT_CHERI_GLOBALS_ABI':
+            note['n_desc'] = struct_parse(elffile.structs.Elf_Cheri_Globals_Abi,
+                                          elffile.stream,
+                                          offset)
+        elif note['n_type'] == 'NT_CHERI_TLS_ABI':
+            note['n_desc'] = struct_parse(elffile.structs.Elf_Cheri_Tls_Abi,
+                                          elffile.stream,
+                                          offset)
         else:
             note['n_desc'] = desc_data
+        
         offset += roundup(note['n_descsz'], 2)
         note['n_size'] = offset - note['n_offset']
         yield note

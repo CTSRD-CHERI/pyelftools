@@ -39,6 +39,8 @@ def process_file(filename):
                         desc['abi_tiny']))
                 elif note['n_type'] in {'NT_GNU_BUILD_ID', 'NT_GNU_GOLD_VERSION'}:
                     print('    Desc:', desc)
+                elif note['n_type'] in {'NT_CHERI_GLOBALS_ABI', 'NT_CHERI_TLS_ABI'}:
+                    print('    Desc:', desc)
                 else:
                     print('    Desc:', bytes2hex(desc))
 

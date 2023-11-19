@@ -189,11 +189,13 @@ class ELFStructs(object):
         sh_type_dict = ENUM_SH_TYPE_BASE
         if self.e_machine == 'EM_ARM':
             sh_type_dict = ENUM_SH_TYPE_ARM
+        elif self.e_machine == 'EM_AARCH64':
+            sh_type_dict = ENUM_SH_TYPE_AARCH64
         elif self.e_machine == 'EM_X86_64':
             sh_type_dict = ENUM_SH_TYPE_AMD64
         elif self.e_machine == 'EM_MIPS':
             sh_type_dict = ENUM_SH_TYPE_MIPS
-        if self.e_machine == 'EM_RISCV':
+        elif self.e_machine == 'EM_RISCV':
             sh_type_dict = ENUM_SH_TYPE_RISCV
 
         self.Elf_Shdr = Struct('Elf_Shdr',
@@ -442,6 +444,17 @@ class ELFStructs(object):
                  **(ENUM_NOTE_N_TYPE if e_type != "ET_CORE"
                     else ENUM_CORE_NOTE_N_TYPE)),
         )
+
+        self.Elf_Cheri_Nhdr = Struct('Elf_Cheri_Nhdr',
+            self.Elf_word('n_namesz'),
+            self.Elf_word('n_descsz'),
+            Enum(self.Elf_word('n_type'), **ENUM_CHERI_NOTE_N_TYPE),
+        )
+
+        self.Elf_Cheri_Globals_Abi = Enum(self.Elf_word('cheri_global_abi'),
+                                          **ENUM_CHERI_NOTE_GLOBALS_ABI)
+        self.Elf_Cheri_Tls_Abi = Enum(self.Elf_word('cheri_tls_abi'),
+                                          **ENUM_CHERI_NOTE_TLS_ABI)
 
         # A process psinfo structure according to
         # http://elixir.free-electrons.com/linux/v2.6.35/source/include/linux/elfcore.h#L84

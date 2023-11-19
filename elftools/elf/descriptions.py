@@ -216,6 +216,10 @@ def describe_note(x):
         desc = '\n    Version: %s' % (n_desc)
     elif x['n_type'] == 'NT_GNU_PROPERTY_TYPE_0':
         desc = '\n      Properties: ' + describe_note_gnu_properties(x['n_desc'])
+    elif x['n_type'] == 'NT_CHERI_GLOBALS_ABI':
+        desc = '\n    Globals ABI: %s' % (n_desc)
+    elif x['n_type'] == 'NT_CHERI_TLS_ABI':
+        desc = '\n    TLS ABI: %s' % (n_desc)
     else:
         desc = '\n      description data: {}'.format(bytes2hex(n_desc))
 
@@ -473,6 +477,7 @@ _DESCR_SH_TYPE = dict(
     SHT_ARM_PREEMPTMAP='ARM_PREEMPTMAP',
     SHT_ARM_ATTRIBUTES='ARM_ATTRIBUTES',
     SHT_ARM_DEBUGOVERLAY='ARM_DEBUGOVERLAY',
+    SHT_AARCH64_ATTRIBUTES='AARCH64_ATTRIBUTES',
     SHT_RISCV_ATTRIBUTES='RISCV_ATTRIBUTES',
     SHT_MIPS_LIBLIST='MIPS_LIBLIST',
     SHT_MIPS_DEBUG='MIPS_DEBUG',
@@ -560,6 +565,7 @@ _DESCR_ST_INFO_TYPE = dict(
     STT_NUM='NUM',
     STT_RELC='RELC',
     STT_SRELC='SRELC',
+    STT_GNU_IFUNC='GNU_IFUNC',
 )
 
 
@@ -624,7 +630,9 @@ _DESCR_NOTE_N_TYPE = dict(
     NT_GNU_HWCAP='DSO-supplied software HWCAP info',
     NT_GNU_BUILD_ID='unique build ID bitstring',
     NT_GNU_GOLD_VERSION='gold version',
-    NT_GNU_PROPERTY_TYPE_0='program properties'
+    NT_GNU_PROPERTY_TYPE_0='program properties',
+    NT_CHERI_GLOBALS_ABI='ABI variant for accessing globals',
+    NT_CHERI_TLS_ABI='ABI variant for accessing thread-locals',
 )
 
 

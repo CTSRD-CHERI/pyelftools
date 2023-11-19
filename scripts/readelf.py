@@ -188,7 +188,7 @@ class ReadElf(object):
             flags &= ~E_FLAGS.EF_ARM_EABIMASK
 
             if flags & E_FLAGS.EF_ARM_RELEXEC:
-                description += ', relocatable executabl'
+                description += ', relocatable executable'
                 flags &= ~E_FLAGS.EF_ARM_RELEXEC
 
             if eabi == E_FLAGS.EF_ARM_EABI_VER5:
@@ -208,6 +208,10 @@ class ReadElf(object):
                     description += ', <unknown>'
             else:
                 description += ', <unrecognized EABI>'
+
+        elif self.elffile['e_machine'] == 'EM_AARCH64':
+            if flags & E_FLAGS.EF_AARCH64_CHERI_PURECAP:
+                description += ', C64'
 
         elif self.elffile['e_machine'] == 'EM_PPC64':
             if flags & E_FLAGS.EF_PPC64_ABI_V2:

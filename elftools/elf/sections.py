@@ -276,7 +276,7 @@ class NoteSection(Section):
             like object with "n_name", "n_type", and "n_desc" fields, amongst
             others.
         """
-        return iter_notes(self.elffile, self['sh_offset'], self['sh_size'])
+        return iter_notes(self.elffile, self['sh_offset'], self['sh_size'], self.name)
 
 
 class StabSection(Section):
