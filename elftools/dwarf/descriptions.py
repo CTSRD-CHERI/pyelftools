@@ -372,6 +372,8 @@ _DESCR_DW_ATE = {
     DW_ATE_HP_floathpintel: '(HP_floathpintel)',
     DW_ATE_HP_imaginary_float80: '(HP_imaginary_float80)',
     DW_ATE_HP_imaginary_float128: '(HP_imaginary_float128)',
+    DW_ATE_CHERI_signed_intcap: '(CHERI signed intcap)',
+    DW_ATE_CHERI_unsigned_intcap: '(CHERI unsigned intcap)',
 }
 
 _DESCR_DW_ACCESS = {
@@ -410,6 +412,11 @@ _DESCR_DW_CC = {
 _DESCR_DW_ORD = {
     DW_ORD_row_major: '(row major)',
     DW_ORD_col_major: '(column major)',
+}
+
+_DESCR_DW_ADDR = {
+    DW_ADDR_none: '(none)',
+    DW_ADDR_capability: '(capability)',
 }
 
 _DESCR_CFI_REGISTER_RULE_TYPE = dict(
@@ -516,6 +523,8 @@ _EXTRA_INFO_DESCRIPTION_MAP = defaultdict(
         _DESCR_DW_CC, '(unknown convention)'),
     DW_AT_ordering=_make_extra_mapper(
         _DESCR_DW_ORD, '(undefined)'),
+    DW_AT_address_class=_make_extra_mapper(
+        _DESCR_DW_ADDR, '(undefined)'),
     DW_AT_frame_base=_location_list_extra,
     DW_AT_location=_location_list_extra,
     DW_AT_string_length=_location_list_extra,
@@ -560,7 +569,7 @@ _REG_NAMES_x64 = [
 ]
 
 # https://developer.arm.com/documentation/ihi0057/e/?lang=en#dwarf-register-names
-_REG_NAMES_AArch64 = [
+_REG_NAMES_AArch64_tmp = [
     'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7',
     'x8', 'x9', 'x10', 'x11', 'x12', 'x13', 'x14', 'x15',
     'x16', 'x17', 'x18', 'x19', 'x20', 'x21', 'x22', 'x23',
@@ -578,6 +587,14 @@ _REG_NAMES_AArch64 = [
     'z16', 'z17', 'z18', 'z19', 'z20', 'z21', 'z22', 'z23',
     'z24', 'z25', 'z26', 'z27', 'z28', 'z29', 'z30', 'z31'
 ]
+_REG_NAMES_AArch64 = ['<none>'] * 232
+for i, regname in enumerate(_REG_NAMES_AArch64_tmp):
+    _REG_NAMES_AArch64[i] = regname
+for i in range(198, 228+1, 1):
+    _REG_NAMES_AArch64[i] = f'c{i - 198}'
+_REG_NAMES_AArch64[229] = 'csp'
+_REG_NAMES_AArch64[230] = 'pcc'
+_REG_NAMES_AArch64[231] = 'ddc'
 
 
 class ExprDumper(object):

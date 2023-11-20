@@ -95,6 +95,8 @@ DW_ATE_HP_complex_float128 = 0x83
 DW_ATE_HP_floathpintel = 0x84
 DW_ATE_HP_imaginary_float80 = 0x85
 DW_ATE_HP_imaginary_float128 = 0x86
+DW_ATE_CHERI_signed_intcap = 0xa0
+DW_ATE_CHERI_unsigned_intcap = 0xa1
 
 
 # Access
@@ -116,6 +118,12 @@ DW_VIS_qualified = 3
 DW_VIRTUALITY_none = 0
 DW_VIRTUALITY_virtual = 1
 DW_VIRTUALITY_pure_virtual = 2
+
+
+# Address class
+#
+DW_ADDR_none = 0
+DW_ADDR_capability = 1
 
 
 # ID case

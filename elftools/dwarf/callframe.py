@@ -127,11 +127,19 @@ class CallFrameInfo(object):
 
         # If this is DWARF version 4 or later, we can have a more precise
         # address size, read from the CIE header.
-        if not self.for_eh_frame and entry_structs.dwarf_version >= 4:
+        # FIXME: this is not applied anyways
+        if is_CIE and not self.for_eh_frame and header['version'] >= 4:
             entry_structs = DWARFStructs(
                 little_endian=entry_structs.little_endian,
                 dwarf_format=entry_structs.dwarf_format,
-                address_size=header.address_size)
+                address_size=entry_structs.address_size,
+                dwarf_version=header['version'])
+            # Parse the CIE header again after getting the DWARF version
+            header_struct = (entry_structs.EH_CIE_header
+                             if self.for_eh_frame else
+                             entry_structs.Dwarf_CIE_header)
+            header = struct_parse(
+                header_struct, self.stream, offset)
 
         # If the augmentation string is not empty, hope to find a length field
         # in order to skip the data specified augmentation.
@@ -210,11 +218,16 @@ class CallFrameInfo(object):
                 args = [struct_parse(structs.Dwarf_uint16(''), self.stream)]
             elif opcode == DW_CFA_advance_loc4:
                 args = [struct_parse(structs.Dwarf_uint32(''), self.stream)]
-            elif opcode in (DW_CFA_offset_extended, DW_CFA_register,
-                            DW_CFA_def_cfa, DW_CFA_val_offset):
+            elif opcode == DW_CFA_register:
+                args = [
+                    struct_parse(structs.Dwarf_uint8(''), self.stream),
+                    struct_parse(structs.Dwarf_uleb128(''), self.stream)]
+            elif opcode in (DW_CFA_offset_extended, DW_CFA_val_offset, DW_CFA_def_cfa):
                 args = [
                     struct_parse(structs.Dwarf_uleb128(''), self.stream),
                     struct_parse(structs.Dwarf_uleb128(''), self.stream)]
+            elif opcode == DW_CFA_def_cfa_register:
+                args = [struct_parse(structs.Dwarf_uint8(''), self.stream)]
             elif opcode in (DW_CFA_restore_extended, DW_CFA_undefined,
                             DW_CFA_same_value, DW_CFA_def_cfa_register,
                             DW_CFA_def_cfa_offset):
@@ -270,6 +283,10 @@ class CallFrameInfo(object):
         augmentation = header.get('augmentation')
         if not augmentation:
             return ('', {})
+        # FIXME: Morello LLVM compiler generates augmentation data length but no augmentation data
+        if augmentation == b'C':
+            dummy_len = struct_parse(entry_structs.Dwarf_uleb128('length'), self.stream)
+            return ('', {})
 
         # Augmentation parsing works in minimal mode here: we need the length
         # field to be able to skip unhandled augmentation fields.
@@ -281,6 +298,7 @@ class CallFrameInfo(object):
             b'L': entry_structs.Dwarf_uint8('LSDA_encoding'),
             b'R': entry_structs.Dwarf_uint8('FDE_encoding'),
             b'S': True,
+            b'C': True,
             b'P': Struct(
                 'personality',
                 entry_structs.Dwarf_uint8('encoding'),

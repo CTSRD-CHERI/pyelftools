@@ -434,7 +434,7 @@ class DWARFStructs(object):
             CString('augmentation'),
             self.Dwarf_uleb128('code_alignment_factor'),
             self.Dwarf_sleb128('data_alignment_factor'),
-            self.Dwarf_uleb128('return_address_register'))
+            self.Dwarf_uint8('return_address_register'))
         self.EH_CIE_header = self.Dwarf_CIE_header
 
         # The CIE header was modified in DWARFv4.
@@ -448,7 +448,7 @@ class DWARFStructs(object):
                 self.Dwarf_uint8('segment_size'),
                 self.Dwarf_uleb128('code_alignment_factor'),
                 self.Dwarf_sleb128('data_alignment_factor'),
-                self.Dwarf_uleb128('return_address_register'))
+                self.Dwarf_uint8('return_address_register'))
 
         self.Dwarf_FDE_header = Struct('Dwarf_FDE_header',
             self.Dwarf_initial_length('length'),
