@@ -89,7 +89,7 @@ def describe_CFI_instructions(entry):
                 name, factored_offset, factored_offset + pc)
             pc += factored_offset
         elif name in (  'DW_CFA_remember_state', 'DW_CFA_restore_state',
-                        'DW_CFA_nop'):
+                        'DW_CFA_nop', 'DW_CFA_AARCH64_negate_ra_state'):
             s += '  %s\n' % name
         elif name == 'DW_CFA_def_cfa':
             s += '  %s: %s ofs %s\n' % (
@@ -469,7 +469,7 @@ def _data_member_location_extra(attr, die, section_offset):
     #
     if attr.form in ('DW_FORM_data1', 'DW_FORM_data2',
                      'DW_FORM_data4', 'DW_FORM_data8',
-                     'DW_FORM_sdata'):
+                     'DW_FORM_sdata', 'DW_FORM_implicit_const'):
         return ''  # No extra description needed
     else:
         return describe_DWARF_expr(attr.value, die.cu.structs, die.cu.cu_offset)
